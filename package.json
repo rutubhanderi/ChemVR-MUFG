@@ -7,9 +7,9 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "setup:env": "cp env.example .env.local && echo '✅ Environment file created! Edit .env.local with your ChatGroq API key'",
+    "setup:env": "echo '✅ Create .env.local file with your Gemini API key'",
     "test:ai": "echo 'Testing AI Tutor API...' && curl -X POST http://localhost:3000/api/ai-tutor -H 'Content-Type: application/json' -d '{\"type\":\"education\",\"question\":\"What is a covalent bond?\"}'",
-    "check:env": "node -e \"console.log('CHATGROQ_API_KEY:', process.env.CHATGROQ_API_KEY ? '✅ Set' : '❌ Not set')\""
+    "check:env": "node -e \"console.log('GEMINI_API_KEY:', process.env.GEMINI_API_KEY ? '✅ Set' : '❌ Not set')\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

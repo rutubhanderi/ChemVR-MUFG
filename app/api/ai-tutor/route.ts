@@ -53,49 +53,48 @@ Key chemistry rules to remember:
 
 Respond in a helpful, educational tone.`
 
-async function queryChatGroq(prompt: string, model: string = "llama-3.1-70b-version"): Promise<string> {
+async function queryGemini(prompt: string, model: string = "gemini-1.5-flash"): Promise<string> {
   try {
-    const apiKey = process.env.CHATGROQ_API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
     
     if (!apiKey) {
-      throw new Error("CHATGROQ_API_KEY environment variable is not set")
+      throw new Error("GEMINI_API_KEY environment variable is not set")
     }
 
-    const response = await fetch("https://api.chatgroq.com/openai/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: model,
-        messages: [
+        contents: [
           {
-            role: "system",
-            content: SYSTEM_PROMPT
-          },
-          {
-            role: "user",
-            content: prompt
+            parts: [
+              {
+                text: `${SYSTEM_PROMPT}\n\nUser question: ${prompt}`
+              }
+            ]
           }
         ],
-        temperature: 0.7,
-        max_tokens: 1000,
-        top_p: 0.9,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000,
+          topP: 0.9,
+        },
       }),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`ChatGroq API error: ${response.status} - ${errorText}`)
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`)
     }
 
     const data = await response.json()
-    return data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that request."
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that request."
   } catch (error) {
-    console.error("ChatGroq API error:", error)
-    if (error instanceof Error && error.message.includes("CHATGROQ_API_KEY")) {
-      return "API key not configured. Please set the CHATGROQ_API_KEY environment variable."
+    console.error("Gemini API error:", error)
+    if (error instanceof Error && error.message.includes("GEMINI_API_KEY")) {
+      return "API key not configured. Please set the GEMINI_API_KEY environment variable."
     }
     return "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again later."
   }
@@ -195,8 +194,8 @@ export async function POST(request: NextRequest) {
     // Generate the prompt for the AI
     const prompt = generatePrompt(body)
     
-    // Query ChatGroq
-    const aiResponse = await queryChatGroq(prompt)
+    // Query Gemini
+    const aiResponse = await queryGemini(prompt)
 
     // Parse and structure the AI response based on type
     let response: AITutorResponse = {

@@ -22,24 +22,20 @@ This guide will help you set up the AI-powered chemistry tutor that provides mol
 Create a `.env.local` file in your project root:
 
 ```bash
-# Copy the example file
-cp env.example .env.local
-
+# Create .env.local file and add your API key
 # Edit .env.local and add your API key
-CHATGROQ_API_KEY=gsk_your_actual_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ### 3. Test the API Key
 
 ```bash
 # Test if your API key works
-curl -X POST https://api.chatgroq.com/openai/v1/chat/completions \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "llama-3.1-8b-instant",
-    "messages": [{"role": "user", "content": "What is a covalent bond?"}],
-    "max_tokens": 100
+    "contents": [{"parts": [{"text": "What is a covalent bond?"}]}],
+    "generationConfig": {"maxOutputTokens": 100}
   }'
 ```
 
@@ -85,21 +81,20 @@ pnpm dev
 - "What molecule am I building?"
 - "Is my structure correct?"
 
-## ChatGroq Models
+## Gemini Models
 
 ### Recommended Models for Chemistry
 
-- **`llama-3.1-8b-instant`** (Default): Fast, good chemistry knowledge
-- **`llama-3.1-70b-version`**: Higher quality, slower responses
-- **`mixtral-8x7b-32768`**: Excellent chemistry knowledge, medium speed
-- **`gemma-2-9b-it`**: Fast, good for simple explanations
+- **`gemini-1.5-flash`** (Default): Fast, excellent chemistry knowledge
+- **`gemini-1.5-pro`**: Higher quality, more detailed responses
+- **`gemini-1.0-pro`**: Legacy model, still very capable
 
 ### Change the Model
 
 Edit `app/api/ai-tutor/route.ts` and change the default model:
 
 ```typescript
-async function queryChatGroq(prompt: string, model: string = "mixtral-8x7b-32768"): Promise<string> {
+async function queryGemini(prompt: string, model: string = "gemini-1.5-pro"): Promise<string> {
   // ... rest of the function
 }
 ```
@@ -109,13 +104,13 @@ async function queryChatGroq(prompt: string, model: string = "mixtral-8x7b-32768
 ### Common Issues
 
 1. **"API key not configured" error**
-   - Make sure `.env.local` exists and contains `CHATGROQ_API_KEY`
+   - Make sure `.env.local` exists and contains `GEMINI_API_KEY`
    - Restart your development server after adding the environment variable
 
 2. **"Unauthorized" error**
    - Check if your API key is correct
-   - Ensure the API key starts with `gsk_`
-   - Verify your ChatGroq account is active
+   - Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Verify your Google AI Studio account is active
 
 3. **"Rate limit exceeded" error**
    - Free tier has rate limits
