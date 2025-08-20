@@ -48,13 +48,7 @@ export interface BondData {
   createdAt: number
 }
 
-export interface BondPreview {
-  atomA: string
-  atomB: string
-  distance: number
-  canForm: boolean
-  suggestedOrder: "single" | "double" | "triple"
-}
+
 
 export interface MoleculeValidation {
   isValid: boolean
@@ -70,13 +64,11 @@ interface AtomStore {
   selectedAtomId: string | null
   draggedAtomId: string | null
   validation: MoleculeValidation
-  bondPreviews: BondPreview[]
-  bondFormationDistance: number
-  bondBreakingDistance: number
-  autoBondingEnabled: boolean
   isValidating: boolean
   useServerValidation: boolean
   lastCreatedBondId: string | null
+  bondCreationMode: boolean
+  firstAtomForBond: string | null
 
   // Actions
   addAtom: (element: AtomType, position?: [number, number, number]) => void
@@ -86,17 +78,16 @@ interface AtomStore {
   setDraggedAtom: (id: string | null) => void
   addBond: (atomAId: string, atomBId: string, order?: "single" | "double" | "triple") => void
   removeBond: (id: string) => void
-  createBondBetweenSelected: (atomBId: string) => void
   cycleBondOrder: (bondId: string) => void
   breakBondsForAtom: (atomId: string) => void
-  updateBondPreviews: () => void
-  toggleAutoBonding: () => void
-  setBondFormationDistance: (distance: number) => void
   clearAll: () => void
   validateMolecule: () => void
   validateMoleculeWithAPI: () => Promise<void>
   toggleServerValidation: () => void
   clearLastCreatedBond: () => void
+  enterBondCreationMode: () => void
+  exitBondCreationMode: () => void
+  selectAtomForBond: (atomId: string) => void
 
   // Computed
   getAtomById: (id: string) => AtomData | undefined
@@ -122,13 +113,11 @@ export const useAtomStore = create<AtomStore>()(
     selectedAtomId: null,
     draggedAtomId: null,
     validation: initialValidation,
-    bondPreviews: [],
-    bondFormationDistance: 1.8,
-    bondBreakingDistance: 2.5,
-    autoBondingEnabled: true,
     isValidating: false,
     useServerValidation: false,
     lastCreatedBondId: null,
+    bondCreationMode: false,
+    firstAtomForBond: null,
 
     // Actions
     addAtom: (element: AtomType, position?: [number, number, number]) => {
@@ -176,46 +165,25 @@ export const useAtomStore = create<AtomStore>()(
     },
 
     updateAtomPosition: (id: string, position: [number, number, number]) => {
-      set((state) => ({
-        atoms: state.atoms.map((atom) => (atom.id === id ? { ...atom, position } : atom)),
-      }))
-
-      const { atoms, bonds, autoBondingEnabled, bondFormationDistance, bondBreakingDistance } = get()
-      const movedAtom = atoms.find((a) => a.id === id)
-      if (!movedAtom) return
-
-      if (autoBondingEnabled) {
-        // Check for bond formation
-        atoms.forEach((otherAtom) => {
-          if (otherAtom.id === id) return
-
-          const distance = get().calculateDistance(id, otherAtom.id)
-          const bondExists = bonds.some(
-            (bond) =>
-              (bond.atomA === id && bond.atomB === otherAtom.id) || (bond.atomA === otherAtom.id && bond.atomB === id),
-          )
-
-          // Auto-bond if atoms are close and can form bonds
-          if (distance < bondFormationDistance && !bondExists && get().canFormBond(id, otherAtom.id)) {
-            const suggestedOrder = get().suggestBondOrder(id, otherAtom.id)
-            get().addBond(id, otherAtom.id, suggestedOrder)
-          }
-        })
-
-        // Check for bond breaking - break bonds that are too stretched
-        const atomBonds = get().getBondsForAtom(id)
-        atomBonds.forEach((bond) => {
-          const otherAtomId = bond.atomA === id ? bond.atomB : bond.atomA
-          const distance = get().calculateDistance(id, otherAtomId)
-
-          if (distance > bondBreakingDistance) {
-            get().removeBond(bond.id)
-          }
-        })
+      // Constrain Z-axis movement to prevent atoms from going too far forward/backward
+      const currentAtom = get().atoms.find(atom => atom.id === id)
+      if (currentAtom) {
+        const [originalX, originalY, originalZ] = currentAtom.position
+        const [newX, newY, newZ] = position
+        
+        // Allow full X and Y movement, but heavily constrain Z movement
+        const zConstraint = 0.3 // Maximum Z-axis movement allowed
+        const constrainedZ = Math.max(
+          originalZ - zConstraint,
+          Math.min(originalZ + zConstraint, newZ)
+        )
+        
+        const constrainedPosition: [number, number, number] = [newX, newY, constrainedZ]
+        
+        set((state) => ({
+          atoms: state.atoms.map((atom) => (atom.id === id ? { ...atom, position: constrainedPosition } : atom)),
+        }))
       }
-
-      // Update bond previews
-      get().updateBondPreviews()
     },
 
     selectAtom: (id: string | null) => {
@@ -302,13 +270,7 @@ export const useAtomStore = create<AtomStore>()(
       setTimeout(() => get().validateMolecule(), 0)
     },
 
-    createBondBetweenSelected: (atomBId: string) => {
-      const { selectedAtomId } = get()
-      if (!selectedAtomId || selectedAtomId === atomBId) return
 
-      const suggestedOrder = get().suggestBondOrder(selectedAtomId, atomBId)
-      get().addBond(selectedAtomId, atomBId, suggestedOrder)
-    },
 
     cycleBondOrder: (bondId: string) => {
       set((state) => {
@@ -357,53 +319,7 @@ export const useAtomStore = create<AtomStore>()(
       bondsToBreak.forEach((bond) => get().removeBond(bond.id))
     },
 
-    updateBondPreviews: () => {
-      const { atoms, bonds, draggedAtomId, bondFormationDistance } = get()
 
-      if (!draggedAtomId) {
-        set({ bondPreviews: [] })
-        return
-      }
-
-      const draggedAtom = atoms.find((a) => a.id === draggedAtomId)
-      if (!draggedAtom) return
-
-      const previews: BondPreview[] = []
-
-      atoms.forEach((otherAtom) => {
-        if (otherAtom.id === draggedAtomId) return
-
-        const distance = get().calculateDistance(draggedAtomId, otherAtom.id)
-        const bondExists = bonds.some(
-          (bond) =>
-            (bond.atomA === draggedAtomId && bond.atomB === otherAtom.id) ||
-            (bond.atomA === otherAtom.id && bond.atomB === draggedAtomId),
-        )
-
-        if (!bondExists && distance < bondFormationDistance * 1.2) {
-          const canForm = get().canFormBond(draggedAtomId, otherAtom.id)
-          const suggestedOrder = canForm ? get().suggestBondOrder(draggedAtomId, otherAtom.id) : "single"
-
-          previews.push({
-            atomA: draggedAtomId,
-            atomB: otherAtom.id,
-            distance,
-            canForm,
-            suggestedOrder,
-          })
-        }
-      })
-
-      set({ bondPreviews: previews })
-    },
-
-    toggleAutoBonding: () => {
-      set((state) => ({ autoBondingEnabled: !state.autoBondingEnabled }))
-    },
-
-    setBondFormationDistance: (distance: number) => {
-      set({ bondFormationDistance: Math.max(0.5, Math.min(3.0, distance)) })
-    },
 
     clearAll: () => {
       set({
@@ -412,7 +328,6 @@ export const useAtomStore = create<AtomStore>()(
         selectedAtomId: null,
         draggedAtomId: null,
         validation: initialValidation,
-        bondPreviews: [],
         isValidating: false,
         useServerValidation: false,
       })
@@ -563,6 +478,55 @@ export const useAtomStore = create<AtomStore>()(
       set({ lastCreatedBondId: null })
     },
 
+    enterBondCreationMode: () => {
+      set({ 
+        bondCreationMode: true, 
+        firstAtomForBond: null,
+        selectedAtomId: null 
+      })
+    },
+
+    exitBondCreationMode: () => {
+      set({ 
+        bondCreationMode: false, 
+        firstAtomForBond: null,
+        selectedAtomId: null 
+      })
+    },
+
+    selectAtomForBond: (atomId: string) => {
+      const { bondCreationMode, firstAtomForBond, atoms } = get()
+      
+      if (!bondCreationMode) return
+
+      if (!firstAtomForBond) {
+        // First atom selection
+        set({ 
+          firstAtomForBond: atomId,
+          selectedAtomId: atomId,
+          atoms: atoms.map((atom) => ({
+            ...atom,
+            isSelected: atom.id === atomId,
+          }))
+        })
+      } else if (firstAtomForBond !== atomId) {
+        // Second atom selection - create the bond
+        const suggestedOrder = get().suggestBondOrder(firstAtomForBond, atomId)
+        get().addBond(firstAtomForBond, atomId, suggestedOrder)
+        
+        // Exit bond creation mode and clear selection
+        set({ 
+          bondCreationMode: false,
+          firstAtomForBond: null,
+          selectedAtomId: null,
+          atoms: atoms.map((atom) => ({
+            ...atom,
+            isSelected: false,
+          }))
+        })
+      }
+    },
+
     // Computed functions
     getAtomById: (id: string) => {
       return get().atoms.find((atom) => atom.id === id)
@@ -653,5 +617,4 @@ export const useAtomStore = create<AtomStore>()(
   })),
 )
 
-// Note: We intentionally avoid a global subscription that calls updateBondPreviews on every state change
-// to prevent recursive update loops. Bond previews are updated explicitly where needed.
+

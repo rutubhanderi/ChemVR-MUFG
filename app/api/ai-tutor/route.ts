@@ -119,6 +119,8 @@ Please provide:
 3. Any corrections needed
 4. Educational insights about the molecule type
 
+Give the answer in a way that is easy to understand and follow. Don't keep the answer too long.
+
 Be encouraging and educational.`
 
     case "validation":

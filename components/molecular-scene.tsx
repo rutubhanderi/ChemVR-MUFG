@@ -3,15 +3,23 @@
 import { useRef, useEffect, useMemo } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import { Text, OrbitControls } from "@react-three/drei"
-import { useAtomStore, ATOM_COLORS, type AtomData, type BondData, type BondPreview } from "@/lib/atom-store"
+import { useAtomStore, ATOM_COLORS, type AtomData, type BondData } from "@/lib/atom-store"
 import * as THREE from "three"
 
 // 3D Atom Component with enhanced interaction
 function AtomSphere({ atom }: { atom: AtomData }) {
   const meshRef = useRef<THREE.Mesh>(null)
   const { camera } = useThree()
-  const { updateAtomPosition, selectAtom, setDraggedAtom, removeAtom, createBondBetweenSelected, selectedAtomId } =
-    useAtomStore()
+  const { 
+    updateAtomPosition, 
+    selectAtom, 
+    setDraggedAtom, 
+    removeAtom, 
+    selectedAtomId,
+    bondCreationMode,
+    firstAtomForBond,
+    selectAtomForBond
+  } = useAtomStore()
 
   // Handle mouse interactions
   const handlePointerDown = (event: any) => {
@@ -36,9 +44,12 @@ function AtomSphere({ atom }: { atom: AtomData }) {
 
   const handleClick = (event: any) => {
     event.stopPropagation()
-    if (selectedAtomId && selectedAtomId !== atom.id) {
-      createBondBetweenSelected(atom.id)
+    
+    if (bondCreationMode) {
+      // In bond creation mode, use the new workflow
+      selectAtomForBond(atom.id)
     } else {
+      // Only allow atom selection when not in bond creation mode
       selectAtom(atom.id)
     }
   }
@@ -92,7 +103,19 @@ function AtomSphere({ atom }: { atom: AtomData }) {
       {atom.isSelected && (
         <mesh>
           <ringGeometry args={[0.5, 0.6, 32]} />
-          <meshBasicMaterial color="#00ff00" transparent opacity={0.6} />
+          <meshBasicMaterial 
+            color={bondCreationMode && firstAtomForBond === atom.id ? "#ffff00" : "#00ff00"} 
+            transparent 
+            opacity={0.6} 
+          />
+        </mesh>
+      )}
+      
+      {/* First atom selection indicator for bond creation */}
+      {bondCreationMode && firstAtomForBond === atom.id && (
+        <mesh>
+          <ringGeometry args={[0.7, 0.8, 32]} />
+          <meshBasicMaterial color="#ffff00" transparent opacity={0.4} />
         </mesh>
       )}
     </group>
@@ -170,47 +193,21 @@ function BondCylinder({ bond, atoms }: { bond: BondData; atoms: AtomData[] }) {
   )
 }
 
-// Bond Preview Component for visual feedback
-function BondPreviewLine({ preview, atoms }: { preview: BondPreview; atoms: AtomData[] }) {
-  const atomA = atoms.find((a) => a.id === preview.atomA)
-  const atomB = atoms.find((a) => a.id === preview.atomB)
 
-  if (!atomA || !atomB) return null
-
-  const start = new THREE.Vector3(...atomA.position)
-  const end = new THREE.Vector3(...atomB.position)
-  const direction = end.clone().sub(start)
-  const length = direction.length()
-  const center = start.clone().add(end).multiplyScalar(0.5)
-
-  const up = new THREE.Vector3(0, 1, 0)
-  const quaternion = new THREE.Quaternion().setFromUnitVectors(up, direction.normalize())
-
-  // Color based on whether bond can form
-  const color = preview.canForm ? "#00ff00" : "#ff6600"
-  const opacity = preview.canForm ? 0.6 : 0.3
-
-  return (
-    <group position={center.toArray()} quaternion={quaternion.toArray()}>
-      <mesh>
-        <cylinderGeometry args={[0.02, 0.02, length, 8]} />
-        <meshBasicMaterial color={color} transparent opacity={opacity} />
-      </mesh>
-
-      {/* Bond order indicator */}
-      {preview.canForm && preview.suggestedOrder !== "single" && (
-        <Text position={[0, 0, 0.3]} fontSize={0.2} color={color} anchorX="center" anchorY="middle">
-          {preview.suggestedOrder === "double" ? "=" : "≡"}
-        </Text>
-      )}
-    </group>
-  )
-}
 
 // Main 3D Scene Component
 export function MolecularScene() {
-  const { atoms, bonds, bondPreviews, draggedAtomId, setDraggedAtom, lastCreatedBondId, clearLastCreatedBond } =
-    useAtomStore()
+  const { 
+    atoms, 
+    bonds, 
+    draggedAtomId, 
+    setDraggedAtom, 
+    lastCreatedBondId, 
+    clearLastCreatedBond,
+    bondCreationMode,
+    firstAtomForBond,
+    exitBondCreationMode
+  } = useAtomStore()
   const { camera, controls } = useThree() as any
 
   // Handle global pointer events for dragging
@@ -225,6 +222,18 @@ export function MolecularScene() {
     document.addEventListener("pointerup", handleGlobalPointerUp)
     return () => document.removeEventListener("pointerup", handleGlobalPointerUp)
   }, [draggedAtomId, setDraggedAtom])
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && bondCreationMode) {
+        exitBondCreationMode()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [bondCreationMode, exitBondCreationMode])
 
   // Smoothly move camera to look at the last created bond
   useEffect(() => {
@@ -272,6 +281,31 @@ export function MolecularScene() {
   return (
     <>
       <OrbitControls makeDefault enableDamping dampingFactor={0.1} rotateSpeed={0.6} />
+      
+      {/* Bond Creation Mode Indicator */}
+      {bondCreationMode && (
+        <>
+          <Text
+            position={[0, 4, 0]}
+            fontSize={0.5}
+            color="#ffff00"
+            anchorX="center"
+            anchorY="middle"
+          >
+            BOND CREATION MODE
+          </Text>
+          <Text
+            position={[0, 3.5, 0]}
+            fontSize={0.3}
+            color="#ffff00"
+            anchorX="center"
+            anchorY="middle"
+          >
+            {firstAtomForBond ? "Click second atom" : "Click first atom"}
+          </Text>
+        </>
+      )}
+      
       {/* Lighting setup */}
       <ambientLight intensity={0.4} />
       <pointLight position={[10, 10, 10]} intensity={1} color="#ffffff" />
@@ -288,9 +322,7 @@ export function MolecularScene() {
         <BondCylinder key={bond.id} bond={bond} atoms={atoms} />
       ))}
 
-      {bondPreviews.map((preview, index) => (
-        <BondPreviewLine key={`preview-${index}`} preview={preview} atoms={atoms} />
-      ))}
+
 
       {/* Reference grid */}
       <gridHelper args={[12, 12, "#333333", "#111111"]} />
