@@ -83,6 +83,23 @@ export function ValidationControls() {
               {validation.isValid ? "Valid Structure" : "Invalid Structure"}
             </Badge>
           </div>
+          {validation.formula && (
+            <div className="text-xs text-muted-foreground">Formula: <span className="font-mono">{validation.formula}</span></div>
+          )}
+          {validation.hints && validation.hints.length > 0 && (
+            <div className="text-xs text-slate-300 space-y-1">
+              {validation.hints.map((h, i) => (
+                <div key={i}>• {h}</div>
+              ))}
+            </div>
+          )}
+          {validation.errors && validation.errors.length > 0 && (
+            <div className="text-xs text-red-400 space-y-1">
+              {validation.errors.map((e, i) => (
+                <div key={i}>• {e}</div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* API Features */}

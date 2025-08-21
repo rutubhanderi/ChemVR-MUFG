@@ -126,14 +126,14 @@ export function AITutor() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-serif flex items-center gap-2">
-          <Brain className="h-5 w-5" />
+    <Card className="bg-slate-900/90 backdrop-blur-md border-slate-700/70">
+      <CardHeader className="py-2 px-3">
+        <CardTitle className="text-sm font-sans flex items-center gap-2 text-slate-100">
+          <Brain className="h-4 w-4" />
           AI Chemistry Tutor
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 px-3 pb-3">
         {/* Mode Selection */}
         <div className="space-y-2">
           <label className="text-sm font-medium">What would you like help with?</label>
@@ -144,7 +144,7 @@ export function AITutor() {
                 variant={mode === m ? "default" : "outline"}
                 size="sm"
                 onClick={() => setMode(m)}
-                className="justify-start"
+                className="justify-start h-8"
               >
                 {getModeIcon(m)}
                 <span className="ml-2 capitalize">{m}</span>
@@ -159,7 +159,7 @@ export function AITutor() {
         {/* Context Input */}
         {mode !== "education" && (
           <div className="space-y-2">
-            <label className="text-sm font-medium">Context (optional)</label>
+            <label className="text-sm font-medium">Context</label>
             <Textarea
               placeholder="e.g., Building water molecule, Working on organic chemistry..."
               value={context}
@@ -186,7 +186,7 @@ export function AITutor() {
         {mode !== "education" && atoms.length > 0 && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Current Molecule</label>
-            <div className="p-3 bg-muted/50 rounded text-sm">
+            <div className="p-3 bg-slate-800/60 border border-slate-700/70 rounded text-sm">
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="secondary">{atoms.length} atoms</Badge>
                 <Badge variant="secondary">{bonds.length} bonds</Badge>
@@ -202,7 +202,7 @@ export function AITutor() {
         <Button
           onClick={handleAskAI}
           disabled={isLoading || (mode === "education" && !question.trim())}
-          className="w-full"
+          className="w-full h-9"
         >
           {isLoading ? (
             <>
@@ -219,9 +219,9 @@ export function AITutor() {
 
         {/* AI Response */}
         {response && (
-          <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+          <div className="space-y-3 p-3 bg-slate-800/40 border border-slate-700/70 rounded-lg">
             <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-primary" />
+              <Brain className="h-4 w-4 text-cyan-400" />
               <span className="font-medium">AI Response</span>
             </div>
 
@@ -319,19 +319,7 @@ export function AITutor() {
           </div>
         )}
 
-        {/* Setup Instructions */}
-        {!response && (
-          <div className="text-xs text-muted-foreground space-y-2">
-            <div className="flex items-center gap-2">
-              <Key className="h-3 w-3" />
-              <span className="font-medium">Powered by ChatGroq</span>
-            </div>
-            <p>Fast AI responses using open-source models</p>
-            <p className="text-xs">
-              <strong>Setup:</strong> Add your ChatGroq API key to <code className="bg-muted px-1 rounded">.env.local</code>
-            </p>
-          </div>
-        )}
+        
       </CardContent>
     </Card>
   )

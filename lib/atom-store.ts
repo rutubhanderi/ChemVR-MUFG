@@ -487,6 +487,39 @@ export const useAtomStore = create<AtomStore>()(
           case "CH4":
             hints.push("Wonderful! You've built Methane (CH₄)")
             break
+          case "C2H6":
+            hints.push("Nice! You've built Ethane (C₂H₆)")
+            break
+          case "C2H6O":
+            hints.push("Nice! You've built Ethanol (C₂H₆O)")
+            break
+          case "O2":
+            hints.push("Great! You've built Dioxygen (O₂)")
+            break
+          case "N2":
+            hints.push("Great! You've built Dinitrogen (N₂)")
+            break
+          case "H2":
+            hints.push("Great! You've built Hydrogen gas (H₂)")
+            break
+          case "HF":
+            hints.push("Nice! You've built Hydrogen Fluoride (HF)")
+            break
+          case "HCl":
+            hints.push("Nice! You've built Hydrogen Chloride (HCl)")
+            break
+          case "HBr":
+            hints.push("Nice! You've built Hydrogen Bromide (HBr)")
+            break
+          case "NH4":
+            hints.push("Ammonium-like arrangement detected (NH₄)")
+            break
+          case "CH3Cl":
+            hints.push("Nice! You've built Chloromethane (CH₃Cl)")
+            break
+          case "CH3Br":
+            hints.push("Nice! You've built Bromomethane (CH₃Br)")
+            break
           default:
             hints.push("Valid molecule structure!")
         }

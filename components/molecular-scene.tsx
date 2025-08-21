@@ -209,8 +209,18 @@ function BondPreviewLine({ preview, atoms }: { preview: BondPreview; atoms: Atom
 
 // Main 3D Scene Component
 export function MolecularScene() {
-  const { atoms, bonds, bondPreviews, draggedAtomId, setDraggedAtom, lastCreatedBondId, clearLastCreatedBond } =
-    useAtomStore()
+  const {
+    atoms,
+    bonds,
+    bondPreviews,
+    draggedAtomId,
+    setDraggedAtom,
+    lastCreatedBondId,
+    clearLastCreatedBond,
+    selectedAtomId,
+    getAtomById,
+    updateAtomPosition,
+  } = useAtomStore()
   const { camera, controls } = useThree() as any
 
   // Handle global pointer events for dragging
@@ -268,6 +278,25 @@ export function MolecularScene() {
 
     requestAnimationFrame(animate)
   }, [lastCreatedBondId, atoms, bonds, camera, controls, clearLastCreatedBond])
+
+  // Keyboard movement for selected atom (WASD)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!selectedAtomId) return
+      const atom = getAtomById(selectedAtomId)
+      if (!atom) return
+      const step = 0.2
+      let [x, y, z] = atom.position
+      if (e.key === "w" || e.key === "W" || e.key === "ArrowUp") y += step
+      else if (e.key === "s" || e.key === "S" || e.key === "ArrowDown") y -= step
+      else if (e.key === "a" || e.key === "A" || e.key === "ArrowLeft") x -= step
+      else if (e.key === "d" || e.key === "D" || e.key === "ArrowRight") x += step
+      else return
+      updateAtomPosition(selectedAtomId, [x, y, z])
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [selectedAtomId, getAtomById, updateAtomPosition])
 
   return (
     <>

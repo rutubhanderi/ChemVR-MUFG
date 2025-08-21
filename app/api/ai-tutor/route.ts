@@ -119,7 +119,9 @@ Please provide:
 3. Any corrections needed
 4. Educational insights about the molecule type
 
-Be encouraging and educational.`
+Be encouraging and educational.
+
+Give the answer summarized in 50 words.`
 
     case "validation":
       return `The student wants validation of their molecule structure.
@@ -135,7 +137,9 @@ Please:
 4. Explain why certain bonds are invalid
 5. Provide positive feedback on what's correct
 
-Be thorough but encouraging.`
+Be thorough but encouraging.
+
+Give the answer summarized in 50 words.`
 
     case "education":
       return `The student wants educational information about molecules.
@@ -150,7 +154,9 @@ Please provide:
 4. Fun facts to engage interest
 5. Related concepts to explore
 
-Make it engaging and educational for a chemistry student.`
+Make it engaging and educational for a chemistry student.
+
+Give the answer summarized in 50 words.`
 
     case "hint":
       return `The student needs hints for building a molecule.
@@ -168,7 +174,9 @@ Please provide:
 4. Chemistry principles to remember
 5. What to try next
 
-Be supportive and guide without spoiling the learning experience.`
+Be supportive and guide without spoiling the learning experience.
+
+Give the answer summarized in 50 words.`
 
     default:
       return `The student has a general chemistry question.
@@ -176,7 +184,9 @@ Be supportive and guide without spoiling the learning experience.`
 Question: ${question || 'Chemistry help needed'}
 Context: ${context || 'Learning chemistry'}
 
-Please provide helpful, educational guidance.`
+Please provide helpful, educational guidance.
+
+Give the answer summarized in 50 words.`
   }
 }
 
