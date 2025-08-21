@@ -1,4 +1,4 @@
-# MUFG: AI-Powered Molecular Builder and Chemistry Tutor
+# ChemVR: AI-Powered Molecular Builder and Chemistry Tutor
 
 An interactive Next.js application that helps students learn chemistry by building and validating molecules in 3D, guided by an AI tutor powered by Google Gemini. It features real-time molecule validation, gamified challenges, progress tracking, and Firebase authentication.
 
