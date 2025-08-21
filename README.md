@@ -123,15 +123,6 @@ Pull request checklist:
 
 Code of Conduct: This project does not yet include a formal code of conduct. Please be respectful and professional. You’re welcome to propose adding `CODE_OF_CONDUCT.md` via PR.
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test authentication flow
-5. Submit a pull request
-
-
 ## License
 
 This project is licensed under the MIT License.
