@@ -16,7 +16,8 @@ import {
   MessageSquare,
   Loader2,
   Sparkles,
-  Key
+  Key,
+  X
 } from "lucide-react"
 
 interface AITutorResponse {
@@ -223,6 +224,17 @@ export function AITutor() {
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4 text-primary" />
               <span className="font-medium">AI Response</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="ml-auto"
+                onClick={() => setResponse(null)}
+                aria-label="Clear AI response"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Clear response
+              </Button>
             </div>
 
             {/* Main Message */}
