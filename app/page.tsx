@@ -1,6 +1,10 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
+import { useAuthActions } from "@/lib/auth-hooks"
+import Loading from "@/components/auth/loading"
 import { Canvas } from "@react-three/fiber"
 
 import { useAtomStore } from "../lib/atom-store"
@@ -18,10 +22,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Button } from "../components/ui/button"
 
+// Main application component with authentication routing
 export default function ChemVRWeb() {
-  const { addAtom, clearAll } = useAtomStore()
+  const { user, loading } = useAuth()
 
+  // Show loading screen while authentication state is being determined
+  if (loading) {
+    return <Loading />
+  }
+
+  // If user is not authenticated, redirect to login
+  if (!user) {
+    return <LoginRedirect />
+  }
+
+  // If user is authenticated, show the main application
+  return <MainApplication />
+}
+
+// Component to redirect unauthenticated users to login
+function LoginRedirect() {
+  const router = useRouter()
+  
+  useEffect(() => {
+    router.push('/login')
+  }, [router])
+  
+  return <Loading />
+}
+
+// Main application component (the original ChemVR Web interface)
+function MainApplication() {
+  const { addAtom, clearAll } = useAtomStore()
   const { currentChallenge, achievements, playerStats } = useGamificationStore()
+  const { logout, loading: logoutLoading } = useAuthActions()
+  const { user } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
@@ -31,7 +70,21 @@ export default function ChemVRWeb() {
 
       <div className="container mx-auto p-6">
         {/* Enhanced Header with Gamification Info */}
-        <header className="text-center mb-8">
+        <header className="text-center mb-8 relative">
+          {/* Logout Button */}
+          <div className="absolute top-0 right-0">
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              disabled={logoutLoading}
+              className="flex items-center gap-2 text-slate-300 border-slate-600 hover:bg-slate-800"
+            >
+              <span className="text-sm">{user?.email}</span>
+              <span>•</span>
+              <span>{logoutLoading ? 'Signing Out...' : 'Sign Out'}</span>
+            </Button>
+          </div>
+          
           <h1 className="text-4xl font-bold font-sans mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
             ChemVR Web
           </h1>

@@ -7,9 +7,10 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "setup:env": "echo '✅ Create .env.local file with your Gemini API key'",
+    "setup:env": "echo '✅ Create .env.local file with your Firebase and Gemini API keys'",
+    "setup:firebase": "echo '📋 Firebase Setup Instructions:' && echo '1. Create a Firebase project at https://console.firebase.google.com/' && echo '2. Enable Authentication with Email/Password and Google Sign-In' && echo '3. Get your config from Project Settings > General > Your apps' && echo '4. Add Firebase config to .env.local'",
     "test:ai": "echo 'Testing AI Tutor API...' && curl -X POST http://localhost:3000/api/ai-tutor -H 'Content-Type: application/json' -d '{\"type\":\"education\",\"question\":\"What is a covalent bond?\"}'",
-    "check:env": "node -e \"console.log('GEMINI_API_KEY:', process.env.GEMINI_API_KEY ? '✅ Set' : '❌ Not set')\""
+    "check:env": "node -e \"console.log('Firebase Config:', process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? '✅ Set' : '❌ Not set'); console.log('Gemini API:', process.env.GEMINI_API_KEY ? '✅ Set' : '❌ Not set')\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -52,6 +53,7 @@
     "expo-asset": "latest",
     "expo-file-system": "latest",
     "expo-gl": "latest",
+    "firebase": "^12.1.0",
     "geist": "^1.3.1",
     "immer": "latest",
     "input-otp": "1.4.1",

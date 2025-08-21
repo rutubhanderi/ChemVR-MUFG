@@ -319,7 +319,7 @@ export function AITutor() {
           </div>
         )}
 
-        {/* Setup Instructions */}
+        {/* Setup Instructions
         {!response && (
           <div className="text-xs text-muted-foreground space-y-2">
             <div className="flex items-center gap-2">
@@ -331,7 +331,7 @@ export function AITutor() {
               <strong>Setup:</strong> Add your ChatGroq API key to <code className="bg-muted px-1 rounded">.env.local</code>
             </p>
           </div>
-        )}
+        )} */}
       </CardContent>
     </Card>
   )
