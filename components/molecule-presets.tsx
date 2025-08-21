@@ -20,9 +20,9 @@ interface MoleculePreset {
 
 const MOLECULE_PRESETS: MoleculePreset[] = [
   {
-    name: "Water",
+    name: "Water (H₂O)",
     formula: "H₂O",
-    description: "Essential for life",
+    description: "Simple bent molecule - essential for life",
     icon: <Droplets className="h-4 w-4" />,
     atoms: [
       { element: "O", position: [0, 0, 0] },
@@ -35,24 +35,9 @@ const MOLECULE_PRESETS: MoleculePreset[] = [
     ],
   },
   {
-    name: "Carbon Dioxide",
-    formula: "CO₂",
-    description: "Greenhouse gas",
-    icon: <Wind className="h-4 w-4" />,
-    atoms: [
-      { element: "C", position: [0, 0, 0] },
-      { element: "O", position: [-1.5, 0, 0] },
-      { element: "O", position: [1.5, 0, 0] },
-    ],
-    bonds: [
-      { atomA: 0, atomB: 1, order: "double" },
-      { atomA: 0, atomB: 2, order: "double" },
-    ],
-  },
-  {
-    name: "Methane",
+    name: "Methane (CH₄)",
     formula: "CH₄",
-    description: "Natural gas component",
+    description: "Tetrahedral molecule - natural gas component",
     icon: <Flame className="h-4 w-4" />,
     atoms: [
       { element: "C", position: [0, 0, 0] },
@@ -69,9 +54,9 @@ const MOLECULE_PRESETS: MoleculePreset[] = [
     ],
   },
   {
-    name: "Ammonia",
+    name: "Ammonia (NH₃)",
     formula: "NH₃",
-    description: "Common base",
+    description: "Trigonal pyramidal molecule - common base",
     icon: <Beaker className="h-4 w-4" />,
     atoms: [
       { element: "N", position: [0, 0, 0] },
@@ -86,75 +71,56 @@ const MOLECULE_PRESETS: MoleculePreset[] = [
     ],
   },
   {
-    name: "Ethanol",
-    formula: "C₂H₆O",
-    description: "Common alcohol",
-    icon: <Beaker className="h-4 w-4" />,
+    name: "Carbon Dioxide (CO₂)",
+    formula: "CO₂",
+    description: "Linear molecule with double bonds - greenhouse gas",
+    icon: <Wind className="h-4 w-4" />,
     atoms: [
-      { element: "C", position: [-0.8, 0, 0] },
-      { element: "C", position: [0.8, 0, 0] },
-      { element: "O", position: [1.8, 0.5, 0] },
-      { element: "H", position: [-1.5, 1, 0.5] },
-      { element: "H", position: [-1.5, -1, 0.5] },
-      { element: "H", position: [-1.5, 0, -1] },
-      { element: "H", position: [1.5, 1, 0.5] },
-      { element: "H", position: [1.5, -1, 0.5] },
-      { element: "H", position: [1.8, 1.3, 0.6] },
+      { element: "C", position: [0, 0, 0] },
+      { element: "O", position: [-1.5, 0, 0] },
+      { element: "O", position: [1.5, 0, 0] },
     ],
     bonds: [
-      { atomA: 0, atomB: 1, order: "single" },
-      { atomA: 1, atomB: 2, order: "single" },
-      { atomA: 0, atomB: 3, order: "single" },
-      { atomA: 0, atomB: 4, order: "single" },
-      { atomA: 0, atomB: 5, order: "single" },
-      { atomA: 1, atomB: 6, order: "single" },
-      { atomA: 1, atomB: 7, order: "single" },
-      { atomA: 2, atomB: 8, order: "single" },
+      { atomA: 0, atomB: 1, order: "double" },
+      { atomA: 0, atomB: 2, order: "double" },
     ],
   },
   {
-    name: "Glucose (simple)",
-    formula: "C₆H₁₂O₆",
-    description: "Basic sugar skeleton",
+    name: "Benzene (C₆H₆)",
+    formula: "C₆H₆",
+    description: "Cyclic molecule with alternating double bonds",
     icon: <Beaker className="h-4 w-4" />,
     atoms: [
-      { element: "C", position: [-2, 0, 0] },
-      { element: "C", position: [-1, 0, 0] },
+      // Carbon ring
       { element: "C", position: [0, 0, 0] },
-      { element: "C", position: [1, 0, 0] },
-      { element: "C", position: [2, 0, 0] },
-      { element: "C", position: [3, 0, 0] },
-      { element: "O", position: [-2, 1.2, 0] },
-      { element: "O", position: [-1, 1.2, 0] },
-      { element: "O", position: [0, 1.2, 0] },
-      { element: "O", position: [1, 1.2, 0] },
-      { element: "O", position: [2, 1.2, 0] },
-      { element: "O", position: [3, 1.2, 0] },
-      { element: "H", position: [-2, -1.2, 0] },
-      { element: "H", position: [-1, -1.2, 0] },
+      { element: "C", position: [1.4, 0, 0] },
+      { element: "C", position: [2.1, 1.2, 0] },
+      { element: "C", position: [1.4, 2.4, 0] },
+      { element: "C", position: [0, 2.4, 0] },
+      { element: "C", position: [-0.7, 1.2, 0] },
+      // Hydrogen atoms
       { element: "H", position: [0, -1.2, 0] },
-      { element: "H", position: [1, -1.2, 0] },
-      { element: "H", position: [2, -1.2, 0] },
-      { element: "H", position: [3, -1.2, 0] },
+      { element: "H", position: [1.4, -1.2, 0] },
+      { element: "H", position: [3.1, 1.2, 0] },
+      { element: "H", position: [1.4, 3.6, 0] },
+      { element: "H", position: [0, 3.6, 0] },
+      { element: "H", position: [-1.7, 1.2, 0] },
     ],
     bonds: [
-      { atomA: 0, atomB: 1, order: "single" },
+      // Carbon-carbon bonds (alternating single/double)
+      { atomA: 0, atomB: 1, order: "double" },
       { atomA: 1, atomB: 2, order: "single" },
-      { atomA: 2, atomB: 3, order: "single" },
+      { atomA: 2, atomB: 3, order: "double" },
       { atomA: 3, atomB: 4, order: "single" },
-      { atomA: 4, atomB: 5, order: "single" },
+      { atomA: 4, atomB: 5, order: "double" },
+      { atomA: 5, atomB: 0, order: "single" },
+      // Carbon-hydrogen bonds
       { atomA: 0, atomB: 6, order: "single" },
       { atomA: 1, atomB: 7, order: "single" },
       { atomA: 2, atomB: 8, order: "single" },
       { atomA: 3, atomB: 9, order: "single" },
       { atomA: 4, atomB: 10, order: "single" },
       { atomA: 5, atomB: 11, order: "single" },
-      { atomA: 0, atomB: 12, order: "single" },
-      { atomA: 1, atomB: 13, order: "single" },
-      { atomA: 2, atomB: 14, order: "single" },
-      { atomA: 3, atomB: 15, order: "single" },
-      { atomA: 4, atomB: 16, order: "single" },
-      { atomA: 5, atomB: 17, order: "single" },
     ],
   },
 ]
@@ -171,62 +137,44 @@ export function MoleculePresets() {
     clearAll()
 
     // Add atoms first
-    const atomIds: string[] = []
-    preset.atoms.forEach((atomData, index) => {
-      const atomId = isClient ? `preset_atom_${index}_${Date.now()}` : `preset_atom_${index}`
-      atomIds.push(atomId)
-
-      // We need to manually create the atom with the specific ID
-      setTimeout(() => {
-        addAtom(atomData.element, atomData.position)
-      }, index * 50)
+    preset.atoms.forEach((atomData) => {
+      addAtom(atomData.element, atomData.position)
     })
 
-    // Add bonds after atoms are created
-    setTimeout(
-      () => {
-        const { atoms } = useAtomStore.getState()
-        preset.bonds.forEach((bondData) => {
-          if (atoms[bondData.atomA] && atoms[bondData.atomB]) {
-            addBond(atoms[bondData.atomA].id, atoms[bondData.atomB].id, bondData.order)
-          }
-        })
-      },
-      preset.atoms.length * 50 + 100,
-    )
+    // Add bonds after a short delay to ensure atoms are created
+    setTimeout(() => {
+      const { atoms } = useAtomStore.getState()
+      preset.bonds.forEach((bondData) => {
+        if (atoms[bondData.atomA] && atoms[bondData.atomB]) {
+          addBond(atoms[bondData.atomA].id, atoms[bondData.atomB].id, bondData.order)
+        }
+      })
+    }, 100)
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-serif flex items-center gap-2">
-          <Beaker className="h-5 w-5" />
-          Molecule Library
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {MOLECULE_PRESETS.map((preset) => (
-          <Button
-            key={preset.name}
-            onClick={() => loadPreset(preset)}
-            variant="outline"
-            className="w-full justify-start h-auto p-3"
-          >
-            <div className="flex items-center gap-3 w-full">
-              <div className="text-primary">{preset.icon}</div>
-              <div className="flex-1 text-left">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{preset.name}</span>
-                  <Badge variant="secondary" className="text-xs">
-                    {preset.formula}
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">{preset.description}</p>
+    <div className="space-y-3">
+      {MOLECULE_PRESETS.map((preset) => (
+        <Button
+          key={preset.name}
+          onClick={() => loadPreset(preset)}
+          variant="outline"
+          className="w-full justify-start h-auto p-3 bg-slate-800/60 border-slate-600/50 text-slate-200 hover:bg-slate-800/80 hover:border-slate-500/70 transition-all duration-200"
+        >
+          <div className="flex items-center gap-3 w-full">
+            <div className="text-cyan-400">{preset.icon}</div>
+            <div className="flex-1 text-left">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-medium text-sm">{preset.name}</span>
+                <Badge variant="secondary" className="text-xs bg-slate-700/80 text-slate-200">
+                  {preset.formula}
+                </Badge>
               </div>
+              <p className="text-xs text-slate-400 leading-tight">{preset.description}</p>
             </div>
-          </Button>
-        ))}
-      </CardContent>
-    </Card>
+          </div>
+        </Button>
+      ))}
+    </div>
   )
 }

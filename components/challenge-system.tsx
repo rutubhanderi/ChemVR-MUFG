@@ -56,13 +56,13 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <CardTitle className="text-lg font-serif flex items-center gap-2">
+            <CardTitle className="text-lg font-serif flex items-center gap-2 text-slate-100">
               {isClient && challenge.completed && <CheckCircle className="h-5 w-5 text-green-500" />}
               {challenge.title}
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">{challenge.description}</p>
+            <p className="text-sm text-slate-300 mt-1">{challenge.description}</p>
           </div>
-          <Badge variant="secondary" className="ml-2">
+          <Badge variant="secondary" className="ml-2 bg-slate-700/80 text-slate-200">
             {challenge.targetMolecule.formula}
           </Badge>
         </div>
@@ -77,16 +77,16 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
                 }`}
               />
             ))}
-            <span className="text-xs text-muted-foreground ml-1 capitalize">{challenge.difficulty}</span>
+            <span className="text-xs text-slate-300 ml-1 capitalize">{challenge.difficulty}</span>
           </div>
 
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1 text-xs text-slate-300">
             <Trophy className="h-3 w-3" />
             {challenge.maxScore} pts
           </div>
 
           {challenge.timeLimit && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 text-xs text-slate-300">
               <Clock className="h-3 w-3" />
               {challenge.timeLimit}s
             </div>
@@ -145,6 +145,7 @@ function ActiveChallenge() {
     return () => clearInterval(interval)
   }, [challengeStartTime, isClient])
 
+  // Auto-accept: complete challenge as soon as target molecule is correctly built
   useEffect(() => {
     if (!currentChallenge || !validation.isValid) return
 
@@ -173,7 +174,7 @@ function ActiveChallenge() {
     <Card className="border-primary">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="font-serif flex items-center gap-2">
+          <CardTitle className="font-serif flex items-center gap-2 text-slate-100">
             <Target className="h-5 w-5 text-primary" />
             {currentChallenge.title}
           </CardTitle>
@@ -184,10 +185,10 @@ function ActiveChallenge() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="text-sm text-muted-foreground">{currentChallenge.description}</div>
+        <div className="text-sm text-slate-300">{currentChallenge.description}</div>
 
         <div className="flex items-center justify-between">
-          <Badge variant="secondary" className="text-lg font-mono">
+          <Badge variant="secondary" className="text-lg font-mono bg-slate-700/80 text-slate-200">
             Target: {currentChallenge.targetMolecule.formula}
           </Badge>
           <Badge variant={validation.formula === currentChallenge.targetMolecule.formula ? "default" : "outline"}>
@@ -198,8 +199,8 @@ function ActiveChallenge() {
         {timeRemaining !== null && (
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Time Remaining:</span>
-              <span className={`font-mono ${isTimeUp ? "text-red-500" : ""}`}>
+              <span className="text-slate-300">Time Remaining:</span>
+              <span className={`font-mono ${isTimeUp ? "text-red-500" : "text-slate-200"}`}>
                 {Math.max(0, timeRemaining).toFixed(1)}s
               </span>
             </div>
@@ -208,8 +209,8 @@ function ActiveChallenge() {
         )}
 
         <div className="flex justify-between text-sm">
-          <span>Time Elapsed:</span>
-          <span className="font-mono">{timeElapsed.toFixed(1)}s</span>
+          <span className="text-slate-300">Time Elapsed:</span>
+          <span className="font-mono text-slate-200">{timeElapsed.toFixed(1)}s</span>
         </div>
 
         <Separator />
@@ -253,14 +254,14 @@ export function ChallengeSystem() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-serif flex items-center gap-2">
+        <CardTitle className="font-serif flex items-center gap-2 text-slate-100">
           <Trophy className="h-5 w-5" />
           Challenges
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {unlockedChallenges.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">Complete molecules to unlock challenges!</p>
+          <p className="text-sm text-slate-300 text-center py-4">Complete molecules to unlock challenges!</p>
         ) : (
           <div className="space-y-3">
             {unlockedChallenges.map((challenge) => (
@@ -271,8 +272,8 @@ export function ChallengeSystem() {
 
         <Separator />
 
-        <div className="text-xs text-muted-foreground">
-          <p className="font-medium mb-1">Progress:</p>
+        <div className="text-xs text-slate-300">
+          <p className="font-medium mb-1 text-slate-200">Progress:</p>
           <p>
             {challenges.filter((c) => c.completed).length} / {challenges.length} challenges completed
           </p>

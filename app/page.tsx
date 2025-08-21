@@ -7,13 +7,16 @@ import { useAuthActions } from "@/lib/auth-hooks"
 import Loading from "@/components/auth/loading"
 import { Canvas } from "@react-three/fiber"
 
-import { useAtomStore } from "../lib/atom-store"
+import { useAtomStore, computeEmpiricalFormula } from "../lib/atom-store"
+import { areFormulasEquivalent } from "../lib/utils"
 import { useGamificationStore } from "../lib/gamification-store"
 import { ChallengeCompleteModal, AchievementUnlockModal } from "../components/gamification-modals"
 import { MolecularScene } from "../components/molecular-scene"
+import { AIHintSystem } from "../components/ai-hint-system"
 import { ValidationControls } from "../components/validation-controls"
 import { AchievementsPanel } from "../components/achievements-panel"
 import { AITutor } from "../components/ai-tutor"
+import { MoleculePresets } from "../components/molecule-presets"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
 
@@ -95,7 +98,8 @@ function MainApplication() {
   useEffect(() => {
     if (!currentChallenge) return
     if (!validation.isValid) return
-    if (validation.formula !== currentChallenge.targetMolecule.formula) return
+    // Compare by composition to avoid order issues (e.g., NH3 vs H3N)
+    if (!areFormulasEquivalent(validation.formula, currentChallenge.targetMolecule.formula)) return
     const timeSpent = timeElapsed
     const accuracy = 100
     let score = currentChallenge.maxScore
@@ -119,7 +123,7 @@ function MainApplication() {
         <div className="container mx-auto px-6 py-4 flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold font-sans bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-              ChemVR Web
+              ChemVR 
             </h1>
             <p className="text-sm text-slate-300 font-serif">Interactive Molecular Builder & Simulator</p>
           </div>
@@ -145,8 +149,13 @@ function MainApplication() {
             <MolecularScene />
           </Canvas>
 
+          {/* AI Hint System - top left */}
+          <div className="absolute top-4 left-4 z-10">
+            <AIHintSystem />
+          </div>
+
           {/* Overlays - top right */}
-          <div className="absolute top-4 right-4 w-64 space-y-3 max-h-[calc(70vh-2rem)] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-600">
+          <div className="absolute top-4 right-4 w-64 space-y-2.5">
             {/* Compact Atom Generator Card */}
             <Card className="bg-slate-900/90 backdrop-blur-md border-slate-600 shadow-xl">
               <CardHeader className="pb-2 px-3 pt-3">
@@ -155,10 +164,10 @@ function MainApplication() {
                   Elements
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 px-3 pb-3">
+              <CardContent className="space-y-2.5 px-3 pb-3">
                 {/* Common Elements - Most Used */}
                 <div>
-                  <div className="text-xs font-medium text-slate-300 mb-1.5 uppercase tracking-wide">
+                  <div className="text-xs font-medium text-slate-300 mb-1 uppercase tracking-wide">
                     Essential
                   </div>
                   <div className="grid grid-cols-4 gap-1.5">
@@ -190,7 +199,7 @@ function MainApplication() {
 
                 {/* Secondary & Halogens Combined - More Compact */}
                 <div>
-                  <div className="text-xs font-medium text-slate-300 mb-1.5 uppercase tracking-wide">
+                  <div className="text-xs font-medium text-slate-300 mb-1 uppercase tracking-wide">
                     Extended
                   </div>
                   <div className="grid grid-cols-5 gap-1">
@@ -287,13 +296,14 @@ function MainApplication() {
                 )}
               </CardContent>
             </Card>
+
           </div>
         </section>
 
-        {/* Content Row: Challenges, Validation, Achievements */}
+        {/* Content Row: Challenges, Validation + Molecule Presets, Achievements */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Challenges */}
-          <div className="max-h-[28rem] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-600">
+          {/* Challenges - Left Column */}
+          <div>
             <Card className="bg-slate-900/80 backdrop-blur-md border-slate-600 shadow-xl">
               <CardHeader className="pb-3 px-4 pt-4">
                 <CardTitle className="font-serif text-lg flex items-center gap-2 text-slate-100">
@@ -301,24 +311,24 @@ function MainApplication() {
                   Challenges
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 px-4 pb-4">
+              <CardContent className="space-y-2 px-4 pb-4">
                 {challenges.map((challenge) => (
-                  <div key={challenge.id} className="p-3 rounded-lg border border-slate-600/50 bg-slate-800/60 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-200 group">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="font-medium text-slate-100 group-hover:text-cyan-300 transition-colors">
+                  <div key={challenge.id} className="p-2.5 rounded-lg border border-slate-600/50 bg-slate-800/60 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-200 group">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="font-medium text-slate-100 group-hover:text-cyan-300 transition-colors text-sm">
                         {challenge.title}
                       </div>
-                      <div className="text-xs text-slate-300 bg-slate-700/50 px-2 py-1 rounded font-mono">
+                      <div className="text-xs text-slate-300 bg-slate-700/50 px-2 py-0.5 rounded font-mono">
                         {challenge.targetMolecule.formula}
                       </div>
                     </div>
-                    <div className="text-xs text-slate-300 leading-relaxed mb-3">
+                    <div className="text-xs text-slate-300 leading-relaxed mb-2.5 line-clamp-2">
                       {challenge.description}
                     </div>
                     <Button
                       onClick={() => { clearAll(); startChallenge(challenge.id) }}
                       disabled={!challenge.unlocked}
-                      className={`w-full h-8 text-xs font-medium transition-all duration-200 ${
+                      className={`w-full h-7 text-xs font-medium transition-all duration-200 ${
                         challenge.completed 
                           ? "bg-emerald-900/30 border-emerald-500/50 text-emerald-300 hover:bg-emerald-900/50 hover:border-emerald-500/70" 
                           : "bg-blue-900/30 border-blue-500/50 text-blue-300 hover:bg-blue-900/50 hover:border-blue-500/70"
@@ -333,20 +343,36 @@ function MainApplication() {
             </Card>
           </div>
 
-          {/* Validation Engine */}
-          <Card className="bg-slate-900/80 backdrop-blur-md border-slate-600 shadow-xl h-fit">
-            <CardHeader className="pb-3 px-4 pt-4">
-              <CardTitle className="text-lg font-serif flex items-center gap-2 text-slate-100">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                Validation Engine
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <ValidationControls />
-            </CardContent>
-          </Card>
+          {/* Middle Column: Validation Engine + Molecule Presets */}
+          <div className="space-y-6">
+            {/* Validation Engine */}
+            <Card className="bg-slate-900/80 backdrop-blur-md border-slate-600 shadow-xl h-fit">
+              <CardHeader className="pb-3 px-4 pt-4">
+                <CardTitle className="text-lg font-serif flex items-center gap-2 text-slate-100">
+                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                  Validation Engine
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <ValidationControls />
+              </CardContent>
+            </Card>
 
-          {/* Achievements */}
+            {/* Molecule Presets */}
+            <Card className="bg-slate-900/80 backdrop-blur-md border-slate-600 shadow-xl h-fit">
+              <CardHeader className="pb-3 px-4 pt-4">
+                <CardTitle className="text-lg font-serif flex items-center gap-2 text-slate-100">
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                  Molecule Presets
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <MoleculePresets />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Achievements - Right Column */}
           <Card className="bg-slate-900/80 backdrop-blur-md border-slate-600 shadow-xl h-fit">
             <CardHeader className="px-4 py-4 border-b border-slate-600/50">
               <CardTitle className="text-lg font-serif flex items-center gap-2 text-slate-100">
