@@ -127,16 +127,28 @@ function MainApplication() {
             </h1>
             <p className="text-sm text-slate-300 font-serif">Interactive Molecular Builder & Simulator</p>
           </div>
-          <div>
+          <div className="flex items-center gap-3">
+            {/* User Info Container */}
+            <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-600 rounded-lg px-4 py-2">
+              <div className="text-sm text-slate-200">
+                {user?.metadata?.creationTime && 
+                 new Date(user.metadata.creationTime).toDateString() === new Date().toDateString() 
+                  ? "Welcome" 
+                  : "Welcome back"
+                }, <span className="font-medium text-slate-100">{user?.email}</span>
+              </div>
+            </div>
+            
+            {/* Sign Out Container */}
             <Button
               onClick={handleLogout}
               variant="outline"
               disabled={logoutLoading}
-              className="flex items-center gap-2 text-slate-200 border-slate-600 hover:bg-slate-800/80 hover:border-slate-500 transition-all duration-200 bg-slate-800/40 backdrop-blur-sm"
+              className="border-slate-600 hover:bg-red-900/30 hover:border-red-500/50 hover:text-red-300 transition-all duration-200 bg-slate-800/40 backdrop-blur-sm"
             >
-              <span className="text-sm font-medium text-slate-200">{user?.email}</span>
-              <div className="w-1 h-1 bg-slate-400 rounded-full"></div>
-              <span className="font-medium text-slate-200">{logoutLoading ? 'Signing Out...' : 'Sign Out'}</span>
+              <span className="font-medium text-slate-200">
+                {logoutLoading ? 'Signing Out...' : 'Sign Out'}
+              </span>
             </Button>
           </div>
         </div>

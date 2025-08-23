@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { Mail, Lock, Eye, EyeOff, Chrome } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Chrome, FlaskConical } from 'lucide-react';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -83,104 +83,134 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
-          <CardDescription className="text-center">
-            Enter your information to create a new account
+    <div className="min-h-screen flex items-center justify-center bg-[#1A2A44] p-4 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 w-32 h-32 bg-[#AB47BC] rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-40 h-40 bg-[#FF6200] rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-[#00C853] rounded-full blur-3xl"></div>
+      </div>
+
+      <Card className="w-full max-w-md bg-white/10 backdrop-blur-md border-[#D3D3D3]/20 shadow-2xl">
+        <CardHeader className="space-y-4 text-center pb-6">
+          <div className="flex justify-center mb-2">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#FF6200] to-[#AB47BC] rounded-full flex items-center justify-center shadow-lg">
+              <FlaskConical className="h-8 w-8 text-white" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold text-white font-sans">
+            Create Account
+          </CardTitle>
+          <CardDescription className="text-[#D3D3D3] text-sm">
+            Join ChemVR and start building molecules
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email Field */}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white text-sm font-medium">
+                Email Address
+              </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-[#D3D3D3]" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`pl-10 ${formErrors.email ? 'border-red-500' : ''}`}
+                  className={`pl-10 bg-white/5 border-[#D3D3D3]/30 text-white placeholder-[#D3D3D3]/60 focus:border-[#FF6200] focus:ring-[#FF6200]/20 transition-all duration-300 ${
+                    formErrors.email ? 'border-red-400' : ''
+                  }`}
                   disabled={loading}
                 />
               </div>
               {formErrors.email && (
-                <p className="text-sm text-red-500">{formErrors.email}</p>
+                <p className="text-sm text-red-400">{formErrors.email}</p>
               )}
             </div>
 
             {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-white text-sm font-medium">
+                Password
+              </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-[#D3D3D3]" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`pl-10 pr-10 ${formErrors.password ? 'border-red-500' : ''}`}
+                  className={`pl-10 pr-10 bg-white/5 border-[#D3D3D3]/30 text-white placeholder-[#D3D3D3]/60 focus:border-[#FF6200] focus:ring-[#FF6200]/20 transition-all duration-300 ${
+                    formErrors.password ? 'border-red-400' : ''
+                  }`}
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-3 text-[#D3D3D3] hover:text-white transition-colors duration-300"
                   disabled={loading}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {formErrors.password && (
-                <p className="text-sm text-red-500">{formErrors.password}</p>
+                <p className="text-sm text-red-400">{formErrors.password}</p>
               )}
             </div>
 
             {/* Confirm Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-white text-sm font-medium">
+                Confirm Password
+              </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-[#D3D3D3]" />
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm your password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`pl-10 pr-10 ${formErrors.confirmPassword ? 'border-red-500' : ''}`}
+                  className={`pl-10 pr-10 bg-white/5 border-[#D3D3D3]/30 text-white placeholder-[#D3D3D3]/60 focus:border-[#FF6200] focus:ring-[#FF6200]/20 transition-all duration-300 ${
+                    formErrors.confirmPassword ? 'border-red-400' : ''
+                  }`}
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-3 text-[#D3D3D3] hover:text-white transition-colors duration-300"
                   disabled={loading}
                 >
                   {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {formErrors.confirmPassword && (
-                <p className="text-sm text-red-500">{formErrors.confirmPassword}</p>
+                <p className="text-sm text-red-400">{formErrors.confirmPassword}</p>
               )}
             </div>
 
             {/* Sign Up Button */}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-[#FF6200] hover:bg-[#FF6200]/90 text-white font-semibold py-3 rounded-lg transition-all duration-300 hover:scale-105 shadow-lg" 
+              disabled={loading}
+            >
               {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
+              <Separator className="w-full bg-[#D3D3D3]/30" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-[#1A2A44] px-4 text-[#D3D3D3] rounded-[10px]">Or continue with</span>
             </div>
           </div>
 
@@ -188,7 +218,7 @@ export default function SignUp() {
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full border-[#D3D3D3]/50 text-white bg-white/10 hover:bg-white/20 hover:border-[#D3D3D3]/70 transition-all duration-300"
             onClick={handleGoogleSignIn}
             disabled={loading}
           >
@@ -196,28 +226,28 @@ export default function SignUp() {
             {loading ? 'Signing in...' : 'Sign in with Google'}
           </Button>
 
-                     {/* Success Message */}
-           {isSuccess && (
-             <Alert className="border-green-200 bg-green-50 text-green-800">
-               <AlertDescription>
-                 Account created successfully! Redirecting to molecular builder...
-               </AlertDescription>
-             </Alert>
-           )}
+          {/* Success Message */}
+          {isSuccess && (
+            <Alert className="border-[#00C853]/30 bg-[#00C853]/10 text-[#00C853]">
+              <AlertDescription>
+                Account created successfully! Redirecting to molecular builder...
+              </AlertDescription>
+            </Alert>
+          )}
 
-           {/* Error Display */}
-           {error && (
-             <Alert variant="destructive">
-               <AlertDescription>{error}</AlertDescription>
-             </Alert>
-           )}
+          {/* Error Display */}
+          {error && (
+            <Alert className="border-red-400/30 bg-red-400/10 text-red-400">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
           {/* Navigation to Login */}
           <div className="text-center text-sm">
-            Already have an account?{' '}
+            <span className="text-[#D3D3D3]">Already have an account? </span>
             <button
               onClick={() => router.push('/login')}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="text-[#00C853] hover:text-[#00C853]/80 font-medium underline transition-colors duration-300"
               disabled={loading}
             >
               Sign in here
