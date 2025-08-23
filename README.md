@@ -1,104 +1,127 @@
-# ChemVR Web - Interactive Molecular Builder with Firebase Authentication
+# ChemVR: AI-Powered Molecular Builder and Chemistry Tutor
 
-A Next.js application featuring an interactive 3D molecular builder with Firebase authentication, AI-powered chemistry tutoring, and gamification elements.
+An interactive Next.js application that helps students learn chemistry by building and validating molecules in 3D, guided by an AI tutor powered by Google Gemini. It features real-time molecule validation, gamified challenges, progress tracking, and Firebase authentication.
 
 ## Features
 
-- 🔐 **Firebase Authentication**
-  - Email and password authentication
-  - Google Sign-In (popup method)
-  - Protected routes and user state management
-  - Automatic session persistence
-
-- 🧪 **Interactive 3D Molecular Builder**
-  - Real-time 3D molecular visualization
-  - Manual bond creation system
-  - Atom manipulation and positioning
-  - Molecular validation and export
-
-- 🤖 **AI Chemistry Tutor**
-  - Powered by Gemini 1.5 Flash
-  - Interactive Q&A about chemistry concepts
-  - Real-time molecular analysis
-
-- 🎮 **Gamification System**
-  - Achievement system
-  - Challenge-based learning
-  - Progress tracking and scoring
+- 3D molecule builder with React Three Fiber and Drei
+- AI Tutor (Gemini) with modes: suggestion, validation, education, and hints
+- Real-time structural validation via `/api/validate` with valence checks and formula detection
+- Gamification: achievements, challenges, and progress feedback
+- Firebase auth: Email/Password and Google Sign-In
+- Modern UI components (Radix UI, shadcn-inspired), dark mode, responsive design
+- Export controls for sharing/saving work
+- Type-safe codebase with TypeScript
 
 ## Prerequisites
 
-- Node.js 18+ and pnpm
-- Firebase project with Authentication enabled
-- Google Cloud project with Gemini API access
+- Node.js 18+ and Git
+- pnpm or npm
+- Google AI Studio API key for Gemini (`GEMINI_API_KEY`)
+- Firebase project credentials for web app config (NEXT_PUBLIC_… variables)
+- Optional: `curl` for testing API routes locally
 
-## Setup Instructions
+## How to Run the Application
 
-### 1. Install Dependencies
+1) Clone the repository
 
 ```bash
+# Replace with your repo URL
+git clone https://github.com/<your-username>/mufg.git
+cd mufg
+```
+
+2) Install dependencies
+
+```bash
+# using pnpm (recommended)
 pnpm install
+# or npm
+npm install
 ```
 
-### 2. Firebase Configuration
+3) Configure environment variables
 
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable Authentication with Email/Password and Google Sign-In methods
-3. Get your Firebase configuration from Project Settings > General > Your apps
+Create a `.env.local` file in the project root with your keys:
 
-### 3. Environment Variables
+```ini
+# Gemini (Google AI Studio)
+GEMINI_API_KEY=your_google_ai_studio_api_key
 
-Create a `.env.local` file in the root directory:
-
-```env
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your-api-key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
-NEXT_PUBLIC_FIREBASE_APP_ID=your-app-id
-
-# Gemini API (for AI Tutor)
-GEMINI_API_KEY=your-gemini-api-key
+# Firebase Web App Config (Project Settings → General → Your apps)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
-### 4. Firebase Authentication Setup
-
-1. **Enable Email/Password Authentication:**
-   - Go to Firebase Console > Authentication > Sign-in method
-   - Enable "Email/Password" provider
-
-2. **Enable Google Sign-In:**
-   - Go to Firebase Console > Authentication > Sign-in method
-   - Enable "Google" provider
-   - Add your authorized domain (localhost for development)
-
-3. **Configure Authorized Domains:**
-   - Go to Firebase Console > Authentication > Settings > Authorized domains
-   - Add `localhost` for development
-   - Add your production domain when deploying
-
-### 5. Run the Application
+Quick helpers:
 
 ```bash
-# Development mode
-pnpm dev
+# Sanity check your environment variables
+npm run check:env
 
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
+# Get Firebase setup reminders
+npm run setup:firebase
 ```
+
+4) Start the development server
+
+```bash
+# using pnpm
+pnpm dev
+# or npm
+npm run dev
+```
+
+Then open http://localhost:3000.
+
+5) (Optional) Test the AI Tutor API locally
+
+```bash
+npm run test:ai
+# or manually
+curl -X POST http://localhost:3000/api/ai-tutor \
+  -H 'Content-Type: application/json' \
+  -d '{"type":"education","question":"What is a covalent bond?"}'
+```
+
+### Production build
+
+```bash
+pnpm build && pnpm start
+# or
+npm run build && npm run start
+```
+### Tech Notes (Stack)
+
+- Next.js 15, React 19, TypeScript
+- UI: Radix UI primitives, Tailwind CSS 4
+- 3D: three.js, @react-three/fiber, @react-three/drei
+- State: Zustand
+- Auth/Backend: Firebase Authentication
+- AI: Google Gemini via `/app/api/ai-tutor/route.ts`
+- Validation API: `/app/api/validate/route.ts` (valence checks, formula recognition)
+
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test authentication flow
-5. Submit a pull request
+Contributions are welcome! Please follow these guidelines:
 
+- Report bugs and request features via GitHub Issues with clear steps to reproduce or motivation
+- Discuss significant changes via an issue before opening a PR
+- Fork the repo and create a feature branch from `main`
+- Write clear commit messages and include tests or screenshots where useful
+- Ensure the app builds and runs locally before submitting
+
+Pull request checklist:
+
+- The app builds (`npm run build`) without errors
+- Linting passes or is addressed if enabled
+- Changes are scoped and documented in the PR description
+
+Code of Conduct: This project does not yet include a formal code of conduct. Please be respectful and professional. You’re welcome to propose adding `CODE_OF_CONDUCT.md` via PR.
 
 ## License
 
@@ -112,4 +135,5 @@ If you have any questions, suggestions, or feedback, feel free to reach out to t
 - [@rutubhanderi](https://github.com/rutubhanderi)  
 - [@kshitij0318](https://github.com/kshitij0318)  
 
-We’d love to hear from you! 
+We’d love to hear from you!
+

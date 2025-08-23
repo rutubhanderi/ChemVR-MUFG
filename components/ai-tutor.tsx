@@ -16,8 +16,7 @@ import {
   MessageSquare,
   Loader2,
   Sparkles,
-  Key,
-  X
+  Key
 } from "lucide-react"
 
 interface AITutorResponse {
@@ -127,17 +126,17 @@ export function AITutor() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="font-serif flex items-center gap-2">
-          <Brain className="h-5 w-5" />
+    <Card className="bg-slate-900/90 backdrop-blur-md border-slate-700/70">
+      <CardHeader className="py-2 px-3">
+        <CardTitle className="text-sm font-sans flex items-center gap-2 text-slate-100">
+          <Brain className="h-4 w-4" />
           AI Chemistry Tutor
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 px-3 pb-3">
         {/* Mode Selection */}
         <div className="space-y-2">
-          <label className="text-sm font-medium">What would you like help with?</label>
+          <label className="text-sm font-medium text-slate-200">What would you like help with?</label>
           <div className="grid grid-cols-2 gap-2">
             {(["suggestion", "validation", "education", "hint"] as TutorMode[]).map((m) => (
               <Button
@@ -145,27 +144,32 @@ export function AITutor() {
                 variant={mode === m ? "default" : "outline"}
                 size="sm"
                 onClick={() => setMode(m)}
-                className="justify-start"
+                className={`justify-start h-8 ${
+                  mode === m 
+                    ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                    : "bg-transparent border-slate-600 text-slate-300 hover:bg-slate-800/60 hover:border-slate-500"
+                }`}
               >
                 {getModeIcon(m)}
                 <span className="ml-2 capitalize">{m}</span>
               </Button>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground">{getModeDescription(mode)}</p>
+          <p className="text-xs text-slate-400">{getModeDescription(mode)}</p>
         </div>
 
-        <Separator />
+        <Separator className="bg-slate-600" />
 
         {/* Context Input */}
         {mode !== "education" && (
           <div className="space-y-2">
-            <label className="text-sm font-medium">Context (optional)</label>
+            <label className="text-sm font-medium text-slate-200">Context</label>
             <Textarea
               placeholder="e.g., Building water molecule, Working on organic chemistry..."
               value={context}
               onChange={(e) => setContext(e.target.value)}
               rows={2}
+              className="bg-slate-800/60 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-slate-500 focus:ring-slate-500"
             />
           </div>
         )}
@@ -173,12 +177,13 @@ export function AITutor() {
         {/* Question Input for Education Mode */}
         {mode === "education" && (
           <div className="space-y-2">
-            <label className="text-sm font-medium">What would you like to learn about?</label>
+            <label className="text-sm font-medium text-slate-200">What would you like to learn about?</label>
             <Textarea
               placeholder="e.g., What is a covalent bond? How do molecules form? Tell me about carbon..."
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               rows={3}
+              className="bg-slate-800/60 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-slate-500 focus:ring-slate-500"
             />
           </div>
         )}
@@ -186,13 +191,13 @@ export function AITutor() {
         {/* Current Molecule Info */}
         {mode !== "education" && atoms.length > 0 && (
           <div className="space-y-2">
-            <label className="text-sm font-medium">Current Molecule</label>
-            <div className="p-3 bg-muted/50 rounded text-sm">
+            <label className="text-sm font-medium text-slate-200">Current Molecule</label>
+            <div className="p-3 bg-slate-800/60 border border-slate-700/70 rounded text-sm">
               <div className="flex items-center gap-2 mb-2">
-                <Badge variant="secondary">{atoms.length} atoms</Badge>
-                <Badge variant="secondary">{bonds.length} bonds</Badge>
+                <Badge variant="secondary" className="bg-slate-700/80 text-slate-200">{atoms.length} atoms</Badge>
+                <Badge variant="secondary" className="bg-slate-700/80 text-slate-200">{bonds.length} bonds</Badge>
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-slate-400">
                 Elements: {atoms.map(a => a.element).join(", ")}
               </div>
             </div>
@@ -203,7 +208,7 @@ export function AITutor() {
         <Button
           onClick={handleAskAI}
           disabled={isLoading || (mode === "education" && !question.trim())}
-          className="w-full"
+          className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
         >
           {isLoading ? (
             <>
@@ -220,25 +225,14 @@ export function AITutor() {
 
         {/* AI Response */}
         {response && (
-          <div className="space-y-4 p-4 bg-muted/30 rounded-lg border">
+          <div className="space-y-3 p-3 bg-slate-800/40 border border-slate-700/70 rounded-lg">
             <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-primary" />
-              <span className="font-medium">AI Response</span>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="ml-auto"
-                onClick={() => setResponse(null)}
-                aria-label="Clear AI response"
-              >
-                <X className="h-4 w-4 mr-1" />
-                Clear response
-              </Button>
+              <Brain className="h-4 w-4 text-cyan-400" />
+              <span className="font-medium text-slate-200">AI Response</span>
             </div>
 
             {/* Main Message */}
-            <div className="text-sm whitespace-pre-wrap">{response.message}</div>
+            <div className="text-sm whitespace-pre-wrap text-slate-200">{response.message}</div>
 
             {/* Validation Results */}
             {response.validation && (
@@ -249,25 +243,25 @@ export function AITutor() {
                   ) : (
                     <AlertTriangle className="h-4 w-4 text-yellow-500" />
                   )}
-                  <span className="font-medium">
+                  <span className="font-medium text-slate-200">
                     {response.validation.isValid ? "Structure Valid" : "Issues Found"}
                   </span>
                 </div>
 
                 {response.validation.issues.length > 0 && (
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-red-600">Issues:</span>
+                    <span className="text-xs font-medium text-red-400">Issues:</span>
                     {response.validation.issues.map((issue, i) => (
-                      <div key={i} className="text-xs text-red-600">• {issue}</div>
+                      <div key={i} className="text-xs text-red-400">• {issue}</div>
                     ))}
                   </div>
                 )}
 
                 {response.validation.recommendations.length > 0 && (
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-blue-600">Recommendations:</span>
+                    <span className="text-xs font-medium text-blue-400">Recommendations:</span>
                     {response.validation.recommendations.map((rec, i) => (
-                      <div key={i} className="text-xs text-blue-600">• {rec}</div>
+                      <div key={i} className="text-xs text-blue-400">• {rec}</div>
                     ))}
                   </div>
                 )}
@@ -277,9 +271,9 @@ export function AITutor() {
             {/* Suggestions */}
             {response.suggestions && response.suggestions.length > 0 && (
               <div className="space-y-1">
-                <span className="text-xs font-medium text-green-600">Suggestions:</span>
+                <span className="text-xs font-medium text-green-400">Suggestions:</span>
                 {response.suggestions.map((suggestion, i) => (
-                  <div key={i} className="text-xs text-green-600">• {suggestion}</div>
+                  <div key={i} className="text-xs text-green-400">• {suggestion}</div>
                 ))}
               </div>
             )}
@@ -287,9 +281,9 @@ export function AITutor() {
             {/* Hints */}
             {response.hints && response.hints.length > 0 && (
               <div className="space-y-1">
-                <span className="text-xs font-medium text-purple-600">Hints:</span>
+                <span className="text-xs font-medium text-purple-400">Hints:</span>
                 {response.hints.map((hint, i) => (
-                  <div key={i} className="text-xs text-purple-600">• {hint}</div>
+                  <div key={i} className="text-xs text-purple-400">• {hint}</div>
                 ))}
               </div>
             )}
@@ -297,32 +291,32 @@ export function AITutor() {
             {/* Educational Info */}
             {response.educationalInfo && (
               <div className="space-y-2">
-                <div className="text-sm font-medium">{response.educationalInfo.name}</div>
-                <div className="text-xs">{response.educationalInfo.description}</div>
+                <div className="text-sm font-medium text-slate-200">{response.educationalInfo.name}</div>
+                <div className="text-xs text-slate-300">{response.educationalInfo.description}</div>
                 
                 {response.educationalInfo.properties.length > 0 && (
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-blue-600">Properties:</span>
+                    <span className="text-xs font-medium text-blue-400">Properties:</span>
                     {response.educationalInfo.properties.map((prop, i) => (
-                      <div key={i} className="text-xs text-blue-600">• {prop}</div>
+                      <div key={i} className="text-xs text-blue-400">• {prop}</div>
                     ))}
                   </div>
                 )}
 
                 {response.educationalInfo.applications.length > 0 && (
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-green-600">Applications:</span>
+                    <span className="text-xs font-medium text-green-400">Applications:</span>
                     {response.educationalInfo.applications.map((app, i) => (
-                      <div key={i} className="text-xs text-green-600">• {app}</div>
+                      <div key={i} className="text-xs text-green-400">• {app}</div>
                     ))}
                   </div>
                 )}
 
                 {response.educationalInfo.funFacts.length > 0 && (
                   <div className="space-y-1">
-                    <span className="text-xs font-medium text-purple-600">Fun Facts:</span>
+                    <span className="text-xs font-medium text-purple-400">Fun Facts:</span>
                     {response.educationalInfo.funFacts.map((fact, i) => (
-                      <div key={i} className="text-xs text-purple-600">• {fact}</div>
+                      <div key={i} className="text-xs text-purple-400">• {fact}</div>
                     ))}
                   </div>
                 )}
@@ -331,19 +325,7 @@ export function AITutor() {
           </div>
         )}
 
-        {/* Setup Instructions
-        {!response && (
-          <div className="text-xs text-muted-foreground space-y-2">
-            <div className="flex items-center gap-2">
-              <Key className="h-3 w-3" />
-              <span className="font-medium">Powered by ChatGroq</span>
-            </div>
-            <p>Fast AI responses using open-source models</p>
-            <p className="text-xs">
-              <strong>Setup:</strong> Add your ChatGroq API key to <code className="bg-muted px-1 rounded">.env.local</code>
-            </p>
-          </div>
-        )} */}
+        
       </CardContent>
     </Card>
   )

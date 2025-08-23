@@ -37,7 +37,7 @@ const SYSTEM_PROMPT = `You are an expert chemistry tutor specializing in molecul
 1. Help students understand molecular structures
 2. Validate chemical bonds and identify issues
 3. Provide educational information about molecules
-4. Give helpful hints for building molecules
+4. Give context-aware hints for building molecules
 5. Suggest improvements and corrections
 
 Always be encouraging, educational, and accurate. Use simple language when possible and provide step-by-step guidance.
@@ -51,7 +51,13 @@ Key chemistry rules to remember:
 - Phosphorus (P) commonly forms 3 bonds
 - Halogens (F, Cl, Br) form 1 bond
 
-Respond in a helpful, educational tone.`
+For hints, focus on:
+- What the user is currently doing (selected atoms, current structure)
+- The goal if they're working on a challenge
+- The next logical step based on chemistry principles
+- Encouragement for progress made
+
+Keep hints concise, actionable, and contextually relevant.`
 
 async function queryGemini(prompt: string, model: string = "gemini-1.5-flash"): Promise<string> {
   try {
@@ -119,9 +125,9 @@ Please provide:
 3. Any corrections needed
 4. Educational insights about the molecule type
 
-Give the answer in a way that is easy to understand and follow. Don't keep the answer too long.
+Be encouraging and educational.
 
-Be encouraging and educational.`
+Give the answer summarized in 50 words.`
 
     case "validation":
       return `The student wants validation of their molecule structure.
@@ -137,7 +143,9 @@ Please:
 4. Explain why certain bonds are invalid
 5. Provide positive feedback on what's correct
 
-Be thorough but encouraging.`
+Be thorough but encouraging.
+
+Give the answer summarized in 50 words.`
 
     case "education":
       return `The student wants educational information about molecules.
@@ -152,10 +160,12 @@ Please provide:
 4. Fun facts to engage interest
 5. Related concepts to explore
 
-Make it engaging and educational for a chemistry student.`
+Make it engaging and educational for a chemistry student.
+
+Give the answer summarized in 50 words.`
 
     case "hint":
-      return `The student needs hints for building a molecule.
+      return `The student needs context-aware hints for building a molecule.
 
 Current progress:
 ${molecule ? `Atoms: ${molecule.atoms.map(a => `${a.element} at (${a.position.join(', ')})`).join(', ')}
@@ -164,13 +174,13 @@ Bonds: ${molecule.bonds.map(b => `${b.atomA}-${b.atomB} (${b.order})`).join(', '
 Context: ${context || 'Building a molecule'}
 
 Please provide:
-1. Gentle hints without giving away the answer
-2. Step-by-step guidance
-3. Encouragement for progress made
-4. Chemistry principles to remember
-5. What to try next
+1. A single, actionable hint based on the current context
+2. If it's a challenge, focus on the next step toward the goal
+3. If it's free play, suggest interesting chemical facts or next steps
+4. Be encouraging and educational
+5. Keep it concise and specific to what the user is doing
 
-Be supportive and guide without spoiling the learning experience.`
+The hint should be 1-2 sentences maximum, focusing on the most relevant next action or insight.`
 
     default:
       return `The student has a general chemistry question.
@@ -178,7 +188,9 @@ Be supportive and guide without spoiling the learning experience.`
 Question: ${question || 'Chemistry help needed'}
 Context: ${context || 'Learning chemistry'}
 
-Please provide helpful, educational guidance.`
+Please provide helpful, educational guidance.
+
+Give the answer summarized in 50 words.`
   }
 }
 
