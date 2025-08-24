@@ -59,48 +59,49 @@ For hints, focus on:
 
 Keep hints concise, actionable, and contextually relevant.`
 
-async function queryGemini(prompt: string, model: string = "gemini-1.5-flash"): Promise<string> {
+async function queryGroq(prompt: string, model: string = "llama-3.1-8b-instant"): Promise<string> {
   try {
-    const apiKey = process.env.GEMINI_API_KEY
+    const apiKey = process.env.GROQ_API_KEY
     
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY environment variable is not set")
+      throw new Error("GROQ_API_KEY environment variable is not set")
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        contents: [
+        model: model,
+        messages: [
           {
-            parts: [
-              {
-                text: `${SYSTEM_PROMPT}\n\nUser question: ${prompt}`
-              }
-            ]
+            role: "system",
+            content: SYSTEM_PROMPT
+          },
+          {
+            role: "user",
+            content: prompt
           }
         ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1000,
-          topP: 0.9,
-        },
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 0.9,
       }),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`Gemini API error: ${response.status} - ${errorText}`)
+      throw new Error(`Groq API error: ${response.status} - ${errorText}`)
     }
 
     const data = await response.json()
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't process that request."
+    return data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that request."
   } catch (error) {
-    console.error("Gemini API error:", error)
-    if (error instanceof Error && error.message.includes("GEMINI_API_KEY")) {
-      return "API key not configured. Please set the GEMINI_API_KEY environment variable."
+    console.error("Groq API error:", error)
+    if (error instanceof Error && error.message.includes("GROQ_API_KEY")) {
+      return "API key not configured. Please set the GROQ_API_KEY environment variable."
     }
     return "I'm sorry, I'm having trouble connecting to my knowledge base right now. Please try again later."
   }
@@ -208,8 +209,8 @@ export async function POST(request: NextRequest) {
     // Generate the prompt for the AI
     const prompt = generatePrompt(body)
     
-    // Query Gemini
-    const aiResponse = await queryGemini(prompt)
+    // Query Groq
+    const aiResponse = await queryGroq(prompt)
 
     // Parse and structure the AI response based on type
     let response: AITutorResponse = {

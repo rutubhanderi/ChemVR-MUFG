@@ -102,7 +102,7 @@ npm run build && npm run start
 - 3D: three.js, @react-three/fiber, @react-three/drei
 - State: Zustand
 - Auth/Backend: Firebase Authentication
-- AI: Google Gemini via `/app/api/ai-tutor/route.ts`
+- AI: Groq via `/app/api/ai-tutor/route.ts`
 - Validation API: `/app/api/validate/route.ts` (valence checks, formula recognition)
 
 ## Contributing
